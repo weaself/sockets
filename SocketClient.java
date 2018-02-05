@@ -11,15 +11,17 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class SocketClient {
-    public static void main(String[] args) throws IOException {
-        Socket mySocket = null;
-        PrintWriter out = null;
-        BufferedReader in = null;
-        String ipAdd = "172.16.0.23";
-        String strToWrite = null;
-        int port = 8999;
-        Scanner scn = new Scanner(System.in);
-        boolean done = false;
+
+    Socket mySocket;
+    PrintWriter out;
+    BufferedReader in;
+    String ipAdd = "localhost";
+    String strToWrite = null;
+    int port = 8999;
+    Scanner scn = new Scanner(System.in);
+    boolean done = false;
+
+    public SocketClient() {
 
         try {
             mySocket = new Socket(ipAdd, port);
@@ -29,19 +31,36 @@ public class SocketClient {
             String myName = scn.nextLine();
             out.println(myName);
 
-            do {
-                strToWrite = scn.nextLine();
-                out.println(strToWrite);
-                System.out.println(in.readLine());
-                if (strToWrite.equals("bye")) done = true;
-               // System.out.println(done);
-            } while (!done);
+            listenAndWriteInput();
+
 
         } catch (IOException io) {
             System.err.println(io);
         }
-
-        mySocket.close();
     }
 
+    public static void main(String[] args) throws IOException {
+        new SocketClient();
+    }
+
+    public void listenAndWriteInput() {
+        do {
+            try {
+                strToWrite = scn.nextLine();
+                out.println(strToWrite);
+                System.out.println(in.readLine());
+
+                if (strToWrite.equals("bye")) done = true;
+            } catch (IOException ioex) {
+                ioex.printStackTrace();
+            }
+            // System.out.println(done);
+        } while (!done);
+        try {
+            out.close();
+            mySocket.close();
+        } catch(IOException ioex) {
+            ioex.printStackTrace();
+        }
+    }
 }
