@@ -1,6 +1,3 @@
-package socketprogram;
-
-import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,6 +43,7 @@ public class SocketClient {
     public void listenAndWriteInput() {
         do {
             try {
+                System.out.print("Your message: ");
                 strToWrite = scn.nextLine();
                 out.println(strToWrite);
                 System.out.println(in.readLine());
