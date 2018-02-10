@@ -8,11 +8,12 @@ public class ServerListenerApp {
     ServerSocket serSocket;
     int portToListenOn = 8999;
     boolean keepRunning = true;
-    ArrayList<Thread> connectionsList;
+    ArrayList<ServerListener> connectionsList;
+    ArrayList<String> messageCollector = new ArrayList<String>();
 
     public ServerListenerApp() {
 
-        connectionsList = new ArrayList<Thread>();
+        connectionsList = new ArrayList<ServerListener>();
         try {
             ServerSocket serSocket = new ServerSocket(portToListenOn);
             String addressOfServerSocket = serSocket.getInetAddress().toString();
@@ -25,10 +26,17 @@ public class ServerListenerApp {
             while (keepRunning) {
                 Socket fromClientSocket = serSocket.accept();
                 System.out.println("Address of connected client: " + fromClientSocket.getInetAddress().getHostAddress());
-                Thread connectionFromClient = new Thread(new ServerListener(fromClientSocket));
+                ServerListener connectionFromClient = new ServerListener(fromClientSocket);
                 connectionsList.add(connectionFromClient);
         //        System.out.println("New thread with the client " + ServerListener.get);
                 connectionFromClient.start();
+
+                for(ServerListener serverListener : connectionsList) {
+                    ArrayList<String> messages = serverListener.getMessageList();
+                    for(String message : messages) {
+                        serverListener.sendToMe(message);
+                    }
+                }
             }
             }catch(IOException ioex){
                 ioex.printStackTrace();
